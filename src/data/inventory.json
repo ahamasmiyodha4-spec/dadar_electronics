@@ -1,0 +1,22 @@
+{
+    "categories": [
+      {
+        "id": "laptops",
+        "name": "Premium Laptops",
+        "description": "High-performance laptops for business, gaming, and everyday use. Featuring top brands like Apple, Dell, HP, and Lenovo.",
+        "icon": "💻"
+      },
+      {
+        "id": "mobiles",
+        "name": "Smartphones & Mobiles",
+        "description": "The latest smartphones and accessories. We carry genuine Apple iPhone, Samsung Galaxy, and other major brands.",
+        "icon": "📱"
+      }
+    ],
+    "storeInfo": {
+      "address": "Dubai, United Arab Emirates",
+      "phone": "+971 XX XXX XXXX",
+      "email": "sales@dadarelectronics.ae",
+      "whatsapp": "971XXXXXXXX"
+    }
+  }
