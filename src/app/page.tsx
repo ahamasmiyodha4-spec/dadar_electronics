@@ -37,7 +37,7 @@ export default function Home() {
           {/* LOGO AREA - Made larger with hover effect */}
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
             <img 
-              src="/logo.jpg" 
+              src="./logo.jpg" 
               alt="Dadar Electronics Logo" 
               style={{ maxHeight: '100px', width: 'auto' }}
               className="h-16 md:h-24 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300" 
