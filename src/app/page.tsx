@@ -57,7 +57,7 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
         if (entry.isIntersecting) {
           setIsVisible(true);
         } else {
-          setIsVisible(false); // Allows bi-directional up/down animations
+          setIsVisible(false);
         }
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
@@ -82,7 +82,7 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
 // User Review Card Component
 function ReviewCard({ name, role, review }: { name: string; role: string; review: string }) {
   return (
-    <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 relative group flex flex-col justify-between">
+    <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 relative group flex flex-col justify-between h-full min-w-full">
       <span className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-[#2848CC] transition-colors">⭐️⭐️⭐️⭐️⭐️</span>
       <div>
         <div className="flex items-center gap-3 mb-4">
@@ -96,7 +96,7 @@ function ReviewCard({ name, role, review }: { name: string; role: string; review
         </div>
         <p className="text-gray-700 text-sm leading-relaxed mb-6">“{review}”</p>
       </div>
-      <p className="text-xs font-medium text-[#E60000] italic">Verified Purchaser</p>
+      <p className="text-xs font-medium text-[#E60000] italic mt-auto">Verified Purchaser</p>
     </div>
   );
 }
@@ -106,28 +106,41 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [heroTrigger, setHeroTrigger] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
+  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
-  // Clean public root image strings (Fixes the imports error completely)
   const laptopImages = [
     '/laptop2.png',
     '/laptop3.png',
     '/laptop1.png'
   ];
 
+  const reviewData = [
+    { name: "Omar K.", role: "Business Operations Leader, Dubai", review: "Dadar Electronics delivers unparalleled quality and professional service. Their wholesale support is incredible!" },
+    { name: "Elena P.", role: "Wholesale Partner, London", review: "They are truly a global family of business owners. Their tech is genuine, and the competitive wholesale pricing made scaling simple!" },
+    { name: "Ahmad M.", role: "Retail Customer, Abu Dhabi", review: "Found the exact high-performance laptop I needed for my office. Authentic products, speedy fulfillment, and clear communication." }
+  ];
+
   useEffect(() => {
     setIsLoaded(true);
     const timeout = setTimeout(() => setHeroTrigger(true), 200);
 
-    const interval = setInterval(() => {
+    // Product images interval (4 seconds)
+    const productInterval = setInterval(() => {
       setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
     }, 4000);
+
+    // Premium Reviews loop interval (3 seconds moving right to left)
+    const reviewInterval = setInterval(() => {
+      setActiveReviewIndex((prev) => (prev + 1) % reviewData.length);
+    }, 3000);
+
     return () => {
-      clearInterval(interval);
+      clearInterval(productInterval);
+      clearInterval(reviewInterval);
       clearTimeout(timeout);
     };
-  }, [laptopImages.length]);
+  }, [laptopImages.length, reviewData.length]);
 
-  // Luxury Stats Counters
   const partnerCount = useCountUp(1500, 2000, heroTrigger);
   const customerCount = useCountUp(50000, 20000, heroTrigger);
 
@@ -200,49 +213,80 @@ export default function Home() {
       </header>
 
       {/* HERO SECTION WITH DYNAMIC LUXURY COUNTERS */}
-      <section className="bg-gradient-to-br from-[#2848CC] via-blue-700 to-[#1a2d80] text-white py-16 md:py-24 lg:py-36 relative overflow-hidden shadow-inner">
+      <section className="bg-gradient-to-br from-[#2848CC] via-blue-700 to-[#1a2d80] text-white py-20 md:py-24 lg:py-36 relative overflow-hidden shadow-inner">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-400 opacity-20 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
-          <h1 className={`text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-4 md:mb-6 leading-tight transition-all duration-1000 ease-out transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>Premium Electronics <br className="md:hidden" /> in Dubai</h1>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
           
-          {/* STATS COUNT BAR */}
-          <div className={`grid grid-cols-2 gap-x-12 sm:gap-x-20 py-8 mb-10 transition-all duration-1000 ease-out delay-200 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="text-center">
-              <span className="text-5xl md:text-6xl lg:text-7xl font-black tabular-nums tracking-tight text-white">{partnerCount.toLocaleString()}<span className="text-4xl lg:text-5xl font-black text-white/80">+</span></span>
-              <p className="text-sm md:text-base font-semibold text-blue-100 uppercase tracking-widest mt-1">Global Partners</p>
+          <h1 className={`text-[32px] sm:text-5xl lg:text-7xl font-black tracking-tight mb-4 md:mb-6 leading-tight max-w-2xl px-2 transition-all duration-1000 ease-out transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            Premium Electronics <br /> in Dubai
+          </h1>
+          
+          {/* STATS BAR */}
+          <div className={`flex flex-col sm:flex-row items-center justify-center gap-y-8 sm:gap-y-0 sm:gap-x-16 my-10 max-w-xl w-full mx-auto px-4 transition-all duration-1000 ease-out delay-200 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className="text-center w-full sm:w-auto">
+              <span className="text-[44px] sm:text-5xl lg:text-6xl font-black tabular-nums tracking-tight text-white block leading-none">
+                {partnerCount.toLocaleString()}<span className="text-2xl sm:text-3xl font-bold text-white/80 ml-0.5">+</span>
+              </span>
+              <p className="text-[11px] sm:text-xs font-bold text-blue-200 uppercase tracking-widest mt-2">Global Partners</p>
             </div>
-            <div className="text-center">
-              <span className="text-5xl md:text-6xl lg:text-7xl font-black tabular-nums tracking-tight text-white">{customerCount.toLocaleString()}<span className="text-4xl lg:text-5xl font-black text-white/80">+</span></span>
-              <p className="text-sm md:text-base font-semibold text-blue-100 uppercase tracking-widest mt-1">Happy Customers</p>
+            
+            <div className="hidden sm:block h-12 w-[1px] bg-white/20 self-center"></div>
+            
+            <div className="text-center w-full sm:w-auto">
+              <span className="text-[44px] sm:text-5xl lg:text-6xl font-black tabular-nums tracking-tight text-white block leading-none">
+                {customerCount.toLocaleString()}<span className="text-2xl sm:text-3xl font-bold text-white/80 ml-0.5">+</span>
+              </span>
+              <p className="text-[11px] sm:text-xs font-bold text-blue-200 uppercase tracking-widest mt-2">Happy Customers</p>
             </div>
           </div>
           
-          <div className={`flex flex-col sm:flex-row justify-center items-center gap-4 px-4 transition-all duration-1000 ease-out delay-500 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`flex flex-col sm:flex-row justify-center items-center gap-4 px-4 w-full sm:w-auto transition-all duration-1000 ease-out delay-500 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <a href="#products" className="bg-[#E60000] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-red-700 hover:scale-105 transition-all duration-300 shadow-lg w-full sm:w-auto">View Categories</a>
             <a href="#contact" className="bg-white/10 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-[#2848CC] hover:scale-105 transition-all w-full sm:w-auto">Visit Store</a>
           </div>
         </div>
       </section>
 
-      {/* REVIEWS SECTION */}
+      {/* ADVANCED RIGHT-TO-LEFT HORIZONTAL REVIEWS SLIDER */}
       <section id="reviews" className="py-20 md:py-28 bg-white border-y border-gray-100 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-50/50 -skew-y-3 transform-gpu"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
           <ScrollReveal delay={200}>
-            <div className="text-center mb-16 md:mb-20">
+            <div className="text-center mb-12">
               <span className="bg-blue-100 text-[#2848CC] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 inline-block">Trusted & Professional</span>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-950 max-w-2xl mx-auto">Hear From Our<br/> Growing Global Family</h2>
             </div>
           </ScrollReveal>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-            <ScrollReveal delay={400} initialY={16}>
-              <ReviewCard name="Omar K." role="Business Operations Leader, Dubai" review="Dadar Electronics delivers unparalleled quality and professional service. Their wholesale support is incredible!" />
-            </ScrollReveal>
-            <ScrollReveal delay={600} initialY={16}>
-              <ReviewCard name="Elena P." role="Wholesale Partner, London" review="They are truly a global family of business owners. Their tech is genuine, and the competitive wholesale pricing made scaling simple!" />
-            </ScrollReveal>
-          </div>
+          {/* CAROUSEL VIEWPANEL */}
+          <ScrollReveal delay={400} initialY={16}>
+            <div className="relative w-full overflow-hidden px-1 py-4">
+              <div 
+                className="flex transition-transform duration-700 ease-in-out will-change-transform"
+                style={{ transform: `translateX(-${activeReviewIndex * 100}%)` }}
+              >
+                {reviewData.map((item, idx) => (
+                  <div key={idx} className="w-full min-w-full field-contain px-2 sm:px-4">
+                    <ReviewCard name={item.name} role={item.role} review={item.review} />
+                  </div>
+                ))}
+              </div>
+              
+              {/* SLIDER NAVIGATION DOTSINDICATORS */}
+              <div className="flex justify-center gap-2.5 mt-8">
+                {reviewData.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveReviewIndex(idx)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${idx === activeReviewIndex ? 'w-7 bg-[#2848CC]' : 'w-2.5 bg-gray-200'}`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+
         </div>
       </section>
 
