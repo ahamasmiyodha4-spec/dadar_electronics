@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo.jpg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import data from '../data/inventory.json';
 
 interface Category {
@@ -28,6 +28,12 @@ const typedData = data as InventoryData;
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Trigger load animation once component mounts
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
@@ -36,17 +42,30 @@ export default function Home() {
       <header className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
           
-          <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+          {/* LOGO & BRAND NAME AREA */}
+          <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+            {/* Logo Image */}
             <Image 
               src={logo} 
               alt="Dadar Electronics Logo" 
               width={200}
               height={100}
-              className="h-16 md:h-24 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300" 
+              className="h-12 sm:h-14 md:h-20 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" 
               priority
             />
+            
+            {/* Animated Brand Text */}
+            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
+              <span className="text-sm sm:text-lg md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2848CC] to-[#1a2d80] tracking-tight leading-none mb-0.5 md:mb-1">
+                Dadar Electronics
+              </span>
+              <span className="text-[9px] sm:text-[11px] md:text-xs font-bold text-[#E60000] tracking-widest uppercase leading-none">
+                Trading LLC
+              </span>
+            </div>
           </div>
           
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-10">
             <a href="#about" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors duration-300">About Us</a>
             <a href="#products" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors duration-300">Our Products</a>
@@ -62,6 +81,7 @@ export default function Home() {
             </a>
           </nav>
 
+          {/* Mobile Hamburger Button */}
           <button 
             className="md:hidden p-2 text-gray-700 hover:text-[#2848CC] focus:outline-none"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -77,6 +97,7 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-xl">
             <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
@@ -174,8 +195,8 @@ export default function Home() {
           <div>
             <h3 className="text-2xl font-bold mb-6 text-[#E60000]">Store Hours</h3>
             <ul className="space-y-3 text-gray-300">
-              <li>Monday - Saturday: 10:00 AM - 10:00 PM</li>
-              <li>Sunday: Closed</li>
+              <li>Monday - Sunday: 10:00 AM - 10:00 PM</li>
+              <li>Friday: 03:00 PM - 10:00 PM</li>
             </ul>
           </div>
         </div>
