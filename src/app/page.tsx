@@ -60,7 +60,7 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
           setIsVisible(false);
         }
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.05, rootMargin: "0px 0px -20px 0px" }
     );
     if (elementRef.current) observer.observe(elementRef.current);
     return () => observer.disconnect();
@@ -79,24 +79,24 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
   );
 }
 
-// User Review Card Component
+// User Review Card Component (Optimized for Grid)
 function ReviewCard({ name, role, review }: { name: string; role: string; review: string }) {
   return (
-    <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 relative group flex flex-col justify-between h-full min-w-full">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
       <span className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-[#2848CC] transition-colors">⭐️⭐️⭐️⭐️⭐️</span>
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 border border-gray-200 text-lg font-bold flex items-center justify-center text-[#2848CC]">
+          <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 text-sm font-bold flex items-center justify-center text-[#2848CC]">
             {name[0]}
           </div>
           <div>
-            <h4 className="font-bold text-gray-950">{name}</h4>
-            <p className="text-xs text-gray-500">{role}</p>
+            <h4 className="font-bold text-gray-950 text-sm">{name}</h4>
+            <p className="text-[11px] text-gray-500">{role}</p>
           </div>
         </div>
-        <p className="text-gray-700 text-sm leading-relaxed mb-6">“{review}”</p>
+        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">“{review}”</p>
       </div>
-      <p className="text-xs font-medium text-[#E60000] italic mt-auto">Verified Purchaser</p>
+      <p className="text-[10px] font-bold text-[#E60000] uppercase tracking-wider italic mt-auto">Verified Purchaser</p>
     </div>
   );
 }
@@ -106,7 +106,6 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [heroTrigger, setHeroTrigger] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
-  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
   // Advanced AI Assistant Conversational State Funnel
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -128,10 +127,14 @@ export default function Home() {
     '/laptop1.png'
   ];
 
-  const reviewData = [
-    { name: "Omar K.", role: "Business Operations Leader, Dubai", review: "Dadar Electronics delivers unparalleled quality and professional service. Their wholesale support is incredible!" },
-    { name: "Elena P.", role: "Wholesale Partner, London", review: "They are truly a global family of business owners. Their tech is genuine, and the competitive wholesale pricing made scaling simple!" },
-    { name: "Ahmad M.", role: "Retail Customer, Abu Dhabi", review: "Found the exact high-performance laptop I needed for my office. Authentic products, speedy fulfillment, and clear communication." }
+  // High-Density Review Pool for Massive Social Proof
+  const wideReviewData = [
+    { name: "Omar K.", role: "Business Operations Leader, Dubai", review: "Dadar Electronics delivers unparalleled quality and professional service. Their bulk wholesale trade pipelines are extremely efficient!" },
+    { name: "Elena P.", role: "Wholesale Partner, London", review: "They are truly an incredible global family of business owners. Their laptop lots are genuine and pricing is unmatched." },
+    { name: "Ahmad M.", role: "Retail Customer, Abu Dhabi", review: "Found the exact high-performance gaming setup I needed. Authentic devices, rapid fulfillment, and highly responsive support." },
+    { name: "Rajesh S.", role: "Tech Reseller, Deira", review: "Sourcing inventory from Dadar has completely scaled my local retail business. Consistent stock lots and clear condition grading sheets." },
+    { name: "Ziad F.", role: "Corporate IT Purchaser, Riyadh", review: "Ordered 50 custom enterprise business laptops. Every single device arrived perfectly configured. A rock-solid technology partner." },
+    { name: "Sarah L.", role: "Digital Studio Director, Singapore", review: "Incredibly smooth export coordination. Tariq helped me choose the exact MacBook specifications required for our designers." }
   ];
 
   useEffect(() => {
@@ -142,16 +145,11 @@ export default function Home() {
       setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
     }, 4000);
 
-    const reviewInterval = setInterval(() => {
-      setActiveReviewIndex((prev) => (prev + 1) % reviewData.length);
-    }, 3000);
-
     return () => {
       clearInterval(productInterval);
-      clearInterval(reviewInterval);
       clearTimeout(timeout);
     };
-  }, [laptopImages.length, reviewData.length]);
+  }, [laptopImages.length]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -329,7 +327,7 @@ export default function Home() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Chat Form Footer */}
+          {/* Chat Form Footer (Font size 16px to prevent zoom) */}
           <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
             <input
               type="text"
@@ -437,55 +435,90 @@ export default function Home() {
         </div>
       </section>
 
-      {/* REVIEWS SLIDER */}
+      {/* ADVANCED MASSIVE REVIEWS SHOWCASE GRID LAYOUT */}
       <section id="reviews" className="py-20 md:py-28 bg-white border-y border-gray-100 relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-50/50 -skew-y-3 transform-gpu"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
-          <ScrollReveal delay={200}>
-            <div className="text-center mb-12">
-              <span className="bg-blue-100 text-[#2848CC] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 inline-block">Trusted & Professional</span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-950 max-w-2xl mx-auto">Hear From Our<br/> Growing Global Family</h2>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 to-transparent pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <ScrollReveal delay={150}>
+            <div className="text-center mb-16">
+              <span className="bg-blue-100 text-[#2848CC] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 inline-block">Global Trust Matrix</span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-950 tracking-tight">Endorsed By Corporate & Retail Partners</h2>
+              <p className="text-gray-500 text-sm md:text-base mt-3 max-w-xl mx-auto font-medium">See why over 50,000+ custom technical integrations rely on Dadar distribution services.</p>
             </div>
           </ScrollReveal>
           
-          <ScrollReveal delay={400} initialY={16}>
-            <div className="relative w-full overflow-hidden px-1 py-4">
-              <div 
-                className="flex transition-transform duration-700 ease-in-out will-change-transform"
-                style={{ transform: `translateX(-${activeReviewIndex * 100}%)` }}
-              >
-                {reviewData.map((item, idx) => (
-                  <div key={idx} className="w-full min-w-full field-contain px-2 sm:px-4">
-                    <ReviewCard name={item.name} role={item.role} review={item.review} />
-                  </div>
-                ))}
-              </div>
-              
-              <div className="flex justify-center gap-2.5 mt-8">
-                {reviewData.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveReviewIndex(idx)}
-                    className={`h-2.5 rounded-full transition-all duration-300 ${idx === activeReviewIndex ? 'w-7 bg-[#2848CC]' : 'w-2.5 bg-gray-200'}`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </ScrollReveal>
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {wideReviewData.map((review, index) => (
+              <ScrollReveal key={index} delay={index * 100} initialY={14}>
+                <ReviewCard name={review.name} role={review.role} review={review.review} />
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ABOUT US */}
-      <section id="about" className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
-        <ScrollReveal>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b-4 border-[#E60000] inline-block pb-2">About Dadar Electronics</h2>
-            <p className="text-gray-600 text-base md:text-lg leading-relaxed">Dadar Electronics Trading LLC is a premier technology retailer based in the heart of Dubai. We specialize in providing high-quality, genuine laptops and smartphones to both retail and wholesale customers. With a commitment to excellent customer service and competitive pricing, we ensure you get the best tech solutions for your needs.</p>
+      {/* ADVANCED CORPORATE ABOUT US SECTION */}
+      <section id="about" className="py-20 md:py-28 bg-gray-50 relative overflow-hidden border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Column: Visual Brand Highlights Grid */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+              <ScrollReveal delay={100} initialY={10}>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:border-[#2848CC] transition-colors duration-300">
+                  <span className="text-3xl mb-2">🛡️</span>
+                  <h4 className="font-extrabold text-sm text-gray-950">100% Genuine</h4>
+                  <p className="text-[11px] text-gray-500 mt-1">Authentic global brands, certified grading</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={200} initialY={10}>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:border-[#2848CC] transition-colors duration-300">
+                  <span className="text-3xl mb-2">💼</span>
+                  <h4 className="font-extrabold text-sm text-gray-950">Wholesale Volume</h4>
+                  <p className="text-[11px] text-gray-500 mt-1">Highly competitive wholesale lots for trade</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={300} initialY={10}>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:border-[#2848CC] transition-colors duration-300">
+                  <span className="text-3xl mb-2">⚡</span>
+                  <h4 className="font-extrabold text-sm text-gray-950">Fast Logistics</h4>
+                  <p className="text-[11px] text-gray-500 mt-1">Rapid regional shipping from Dubai center</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={400} initialY={10}>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center group hover:border-[#2848CC] transition-colors duration-300">
+                  <span className="text-3xl mb-2">🤝</span>
+                  <h4 className="font-extrabold text-sm text-gray-950">Trusted Support</h4>
+                  <p className="text-[11px] text-gray-500 mt-1">Dedicated live managers on WhatsApp</p>
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right Column: Copy Layout Block */}
+            <div className="lg:col-span-7 space-y-6">
+              <ScrollReveal delay={200}>
+                <span className="bg-red-50 text-[#E60000] text-[11px] font-black uppercase tracking-widest px-3.5 py-1.5 rounded-md inline-block">Corporate Blueprint</span>
+                <h2 className="text-3xl sm:text-4xl font-black text-gray-950 tracking-tight mt-2 leading-tight">Driving Innovation & Hardware Availability Out of Dubai</h2>
+                <div className="h-1.5 w-20 bg-gradient-to-r from-[#2848CC] to-[#E60000] rounded-full mt-4"></div>
+              </ScrollReveal>
+              
+              <ScrollReveal delay={400}>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-medium">
+                  Dadar Electronics Trading LLC is a premier technology retailer based in the heart of Dubai, United Arab Emirates. We specialize in providing high-quality, genuine laptops and smartphones to both local retail and scale volume wholesale customers worldwide.
+                </p>
+              </ScrollReveal>
+              
+              <ScrollReveal delay={500}>
+                <div className="bg-white border-l-4 border-[#2848CC] p-4 rounded-xl shadow-sm border border-gray-100">
+                  <p className="text-xs sm:text-sm text-gray-700 font-bold italic leading-relaxed">
+                    “With a premium commitment to excellent client coordination, logistical velocity, and hyper-competitive pricing indexes, we ensure you get the absolute best tech solutions matching your exact business needs.”
+                  </p>
+                </div>
+              </ScrollReveal>
+            </div>
+
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
       {/* PRODUCTS SECTION */}
