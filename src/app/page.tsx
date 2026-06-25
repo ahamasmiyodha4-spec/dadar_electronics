@@ -108,6 +108,15 @@ export default function Home() {
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
+  // AI Agent Interactive States
+  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: 'bot' | 'user'; text: string }>>([
+    { sender: 'bot', text: "Hello! I am your Dadar Electronics AI Assistant. 🤖 Are you looking for a Premium Laptop or a Smartphone today?" }
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isAiTyping, setIsAiTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   const laptopImages = [
     '/laptop2.png',
     '/laptop3.png',
@@ -139,13 +148,51 @@ export default function Home() {
     };
   }, [laptopImages.length, reviewData.length]);
 
+  // Scroll to bottom of chat whenever messages update
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, isAiTyping]);
+
+  // Handle Static Client-Side AI Response Logic
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userText = inputValue.trim();
+    const newMessages = [...chatMessages, { sender: 'user' as const, text: userText }];
+    setChatMessages(newMessages);
+    setInputValue("");
+    setIsAiTyping(true);
+
+    // AI thinking timeout simulation (1 second)
+    setTimeout(() => {
+      const textLower = userText.toLowerCase();
+      let botResponse = "I understand! Could you specify if you prefer top-tier brands like Apple, Lenovo, or Dell? You can also message our wholesale team directly on WhatsApp for the latest stock sheets!";
+
+      if (textLower.includes('laptop') || textLower.includes('computer') || textLower.includes('macbook') || textLower.includes('work')) {
+        botResponse = "Excellent choice. We carry high-performance premium laptops suited for business, gaming, and design (featuring Apple, Dell, HP, and Lenovo). What is your primary use case, or would you like to check wholesale pricing via WhatsApp?";
+      } else if (textLower.includes('mobile') || textLower.includes('phone') || textLower.includes('iphone') || textLower.includes('samsung')) {
+        botResponse = "Smartphones are one of our core specialties! We stock genuine, top-tier global models. Are you looking for bulk wholesale batches or a single retail premium flagship? Let me know, or tap the WhatsApp bubble to secure live rates!";
+      } else if (textLower.includes('price') || textLower.includes('cost') || textLower.includes('budget') || textLower.includes('how much')) {
+        botResponse = "Because we deal in both direct retail and volume wholesale distributions out of Dubai, our prices fluctuate dynamically with daily market updates to stay competitive. Tap 'WhatsApp Us' right now to get an instant customized quote!";
+      } else if (textLower.includes('hello') || textLower.includes('hi') || textLower.includes('hey')) {
+        botResponse = "Hello there! Welcome to Dadar Electronics. Are you exploring laptop availability or premium mobile stock lists today?";
+      }
+
+      setChatMessages([...newMessages, { sender: 'bot', text: botResponse }]);
+      setIsAiTyping(false);
+    }, 1000);
+  };
+
   const partnerCount = useCountUp(1500, 2000, heroTrigger);
   const customerCount = useCountUp(50000, 20000, heroTrigger);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth relative">
       
-      {/* 1. BRIGHT PREMIUM SIDE-OPENING MOBILE MENU (Off-Canvas Glassmorphism) */}
+      {/* BRIGHT PREMIUM SIDE-OPENING MOBILE MENU (Off-Canvas Glassmorphism) */}
       <div 
         className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
         onClick={() => setIsMobileMenuOpen(false)}
@@ -171,7 +218,7 @@ export default function Home() {
                 href={`https://wa.me/${typedData.storeInfo.whatsapp}`} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="block w-full text-center bg-[#E60000] text-white px-5 py-3.5 rounded-xl font-bold text-base hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-red-500/20 active:scale-98"
+                className="block w-full text-center bg-[#E60000] text-white px-5 py-3.5 rounded-xl font-bold text-base hover:bg-red-700 transition-all duration-300 shadow-md"
               >
                 WhatsApp Us
               </a>
@@ -185,18 +232,94 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FLOATING WHATSAPP ICON */}
-      <a
-        href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
-        target="_blank" rel="noopener noreferrer"
-        className={`fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl flex items-center justify-center group hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-        style={{ transitionDelay: '1600ms' }}
-        aria-label="Chat on WhatsApp"
-      >
-        <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping group-hover:animate-none"></span>
-        <svg className="w-7 h-7 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.516 2.266 2.27 3.507 5.283 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.66.986 3.295 1.503 4.988 1.504 5.485 0 9.95-4.463 9.954-9.948.002-2.658-1.033-5.156-2.915-7.04C16.835 1.805 14.342.766 11.683.766c-5.492 0-9.959 4.464-9.963 9.949-.001 1.83.499 3.614 1.448 5.2l-.995 3.636 3.731-.978zm11.393-5.284c-.314-.157-1.855-.915-2.137-1.018-.282-.102-.487-.153-.692.157-.204.307-.793 1.017-.971 1.222-.178.205-.357.23-.671.074-1.742-.87-2.915-1.554-4.086-3.564-.309-.53.309-.492.885-1.64.095-.192.047-.361-.024-.518-.071-.157-.692-1.666-.949-2.284-.25-.601-.504-.519-.692-.529-.178-.009-.383-.01-.59-.01c-.204 0-.537.077-.818.384-.282.308-1.077 1.051-1.077 2.564 0 1.513 1.101 2.972 1.254 3.177.154.205 2.167 3.31 5.248 4.64.733.317 1.307.507 1.754.65.736.233 1.407.2 1.937.12.59-.088 1.854-.758 2.115-1.455.26-.695.26-1.293.183-1.417-.077-.123-.282-.196-.595-.354z"/></svg>
-        <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Chat with Us</span>
-      </a>
+      {/* FLOATING ACTIONS CONTAINER (BOTTOM RIGHT) */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+        
+        {/* INTERACTIVE EXPANDABLE AI CHAT PANEL */}
+        <div className={`bg-white rounded-2xl shadow-2xl border border-gray-100 w-[300px] sm:w-[350px] h-[400px] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform ${
+          isAiOpen ? 'scale-100 opacity-100 pointer-events-auto translate-y-0' : 'scale-50 opacity-0 pointer-events-none translate-y-10'
+        }`}>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+              <div>
+                <h4 className="font-bold text-sm tracking-wide">Dadar AI Agent</h4>
+                <p className="text-[10px] text-blue-100 font-medium">Virtual Assistant</p>
+              </div>
+            </div>
+            <button onClick={() => setIsAiOpen(false)} className="hover:bg-white/10 p-1 rounded transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          {/* Messages Grid Window */}
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50 space-y-3.5 text-xs">
+            {chatMessages.map((msg, index) => (
+              <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 shadow-sm leading-relaxed ${
+                  msg.sender === 'user' ? 'bg-[#2848CC] text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                }`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isAiTyping && (
+              <div className="flex justify-start">
+                <div className="bg-white border border-gray-100 text-gray-400 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          {/* Bottom Input Box Form */}
+          <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask about laptops, mobiles, or pricing..."
+              className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-blue-500 text-gray-900"
+            />
+            <button type="submit" className="bg-[#2848CC] hover:bg-blue-700 text-white p-2 rounded-xl transition-colors shadow-md">
+              <svg className="w-4 h-4 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+            </button>
+          </form>
+        </div>
+
+        {/* FLOATING ACTION TRIGGER CONTROLS BUTTONS */}
+        <div className="flex flex-col gap-3 items-end">
+          {/* AI Trigger Bubble (Floats comfortably right above WhatsApp) */}
+          <button
+            onClick={() => setIsAiOpen(!isAiOpen)}
+            className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            style={{ transitionDelay: '1400ms' }}
+            aria-label="Toggle AI Agent"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Ask AI Agent 💡</span>
+          </button>
+
+          {/* Standard WhatsApp Trigger Bubble */}
+          <a
+            href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
+            target="_blank" rel="noopener noreferrer"
+            className={`bg-[#25D366] text-white p-4 rounded-full shadow-2xl flex items-center justify-center group hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            style={{ transitionDelay: '1600ms' }}
+            aria-label="Chat on WhatsApp"
+          >
+            <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping group-hover:animate-none"></span>
+            <svg className="w-7 h-7 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.516 2.266 2.27 3.507 5.283 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.66.986 3.295 1.503 4.988 1.504 5.485 0 9.95-4.463 9.954-9.948.002-2.658-1.033-5.156-2.915-7.04C16.835 1.805 14.342.766 11.683.766c-5.492 0-9.959 4.464-9.963 9.949-.001 1.83.499 3.614 1.448 5.2l-.995 3.636 3.731-.978zm11.393-5.284c-.314-.157-1.855-.915-2.137-1.018-.282-.102-.487-.153-.692.157-.204.307-.793 1.017-.971 1.222-.178.205-.357.23-.671.074-1.742-.87-2.915-1.554-4.086-3.564-.309-.53.309-.492.885-1.64.095-.192.047-.361-.024-.518-.071-.157-.692-1.666-.949-2.284-.25-.601-.504-.519-.692-.529-.178-.009-.383-.01-.59-.01c-.204 0-.537.077-.818.384-.282.308-1.077 1.051-1.077 2.564 0 1.513 1.101 2.972 1.254 3.177.154.205 2.167 3.31 5.248 4.64.733.317 1.307.507 1.754.65.736.233 1.407.2 1.937.12.59-.088 1.854-.758 2.115-1.455.26-.695.26-1.293.183-1.417-.077-.123-.282-.196-.595-.354z"/></svg>
+            <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Chat with Us</span>
+          </a>
+        </div>
+      </div>
 
       {/* HEADER */}
       <header className={`bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-40 border-b border-gray-100 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
@@ -204,7 +327,7 @@ export default function Home() {
           
           <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <Image src={logo} alt="Dadar Electronics Logo" width={200} height={100} className="h-12 sm:h-14 md:h-20 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" priority/>
-            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
               <span className="text-sm sm:text-lg md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2848CC] to-[#1a2d80] tracking-tight leading-none mb-0.5 md:mb-1">Dadar Electronics</span>
               <span className="text-[9px] sm:text-[11px] md:text-xs font-bold text-[#E60000] tracking-widest uppercase leading-none">Trading LLC</span>
             </div>
