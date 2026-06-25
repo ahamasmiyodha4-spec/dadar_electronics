@@ -2,12 +2,6 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo.jpg';
-// Importing your new showcase images
-import laptop1 from '../../public/laptop1.png';
-import laptop2 from '../../public/laptop2.jpg';
-import laptop3 from '../../public/laptop3.png';
-import mobile1 from '../../public/mobile1.png';
-
 import { useState, useEffect } from 'react';
 import data from '../data/inventory.json';
 
@@ -38,9 +32,14 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
 
-  const laptopImages = [laptop2, laptop3, laptop1];
+  // Using absolute string paths relative to the public directory
+  const laptopImages = [
+    '/laptop2.jpg',
+    '/laptop3.png',
+    '/laptop1.png'
+  ];
 
-  // Auto-slide laptop photos every 4 seconds for a premium dynamic look
+  // Auto-slide laptop photos every 4 seconds
   useEffect(() => {
     setIsLoaded(true);
     const interval = setInterval(() => {
@@ -180,33 +179,31 @@ export default function Home() {
                 className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  {/* Premium Media Layout containing your uploaded files */}
                   <div className="relative w-full h-52 sm:h-64 mb-6 overflow-hidden rounded-xl bg-gray-100 border border-gray-50 shadow-inner">
                     {category.id === 'laptops' ? (
-                      // Laptop automatic loop using laptop2.jpg, laptop3.png, and laptop1.png
-                      laptopImages.map((img, idx) => (
+                      laptopImages.map((imgSrc, idx) => (
                         <Image
                           key={idx}
-                          src={img}
+                          src={imgSrc}
                           alt="Premium Laptops Showcase"
                           fill
+                          unoptimized
                           className={`object-cover transition-opacity duration-1000 ease-in-out ${idx === activeLaptopIndex ? 'opacity-100' : 'opacity-0'}`}
                           sizes="(max-w-7xl) 50vw, 100vw"
                         />
                       ))
                     ) : (
-                      // Mobile single premium collage template using mobile1.png
                       <Image
-                        src={mobile1}
+                        src="/mobile1.png"
                         alt="Smartphones & Mobiles Showcase"
                         fill
+                        unoptimized
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         sizes="(max-w-7xl) 50vw, 100vw"
                       />
                     )}
                     
-                    {/* Floating Brand Badge */}
-                    <span className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-[11px] font-bold tracking-widest px-2.5 py-1 rounded-md uppercase">
+                    <span className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-[11px] font-bold tracking-widest px-2.5 py-1 rounded-md uppercase z-20">
                       {category.icon} {category.id}
                     </span>
                   </div>
