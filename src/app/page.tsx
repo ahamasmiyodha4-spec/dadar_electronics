@@ -79,24 +79,24 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
   );
 }
 
-// User Review Card Component (Optimized for Grid)
+// User Review Card Component (Optimized for Carousel)
 function ReviewCard({ name, role, review }: { name: string; role: string; review: string }) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
+    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 relative group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
       <span className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-[#2848CC] transition-colors">⭐️⭐️⭐️⭐️⭐️</span>
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 text-sm font-bold flex items-center justify-center text-[#2848CC]">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 text-lg font-bold flex items-center justify-center text-[#2848CC]">
             {name[0]}
           </div>
           <div>
-            <h4 className="font-bold text-gray-950 text-sm">{name}</h4>
-            <p className="text-[11px] text-gray-500">{role}</p>
+            <h4 className="font-bold text-gray-950">{name}</h4>
+            <p className="text-xs text-gray-500">{role}</p>
           </div>
         </div>
-        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">“{review}”</p>
+        <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6">“{review}”</p>
       </div>
-      <p className="text-[10px] font-bold text-[#E60000] uppercase tracking-wider italic mt-auto">Verified Purchaser</p>
+      <p className="text-[11px] font-bold text-[#E60000] uppercase tracking-wider italic mt-auto">Verified Purchaser</p>
     </div>
   );
 }
@@ -106,6 +106,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [heroTrigger, setHeroTrigger] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
+  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
   // Advanced AI Assistant Conversational State Funnel
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -145,11 +146,17 @@ export default function Home() {
       setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
     }, 4000);
 
+    // Restore the 3-second automatic sliding functionality
+    const reviewInterval = setInterval(() => {
+      setActiveReviewIndex((prev) => (prev + 1) % wideReviewData.length);
+    }, 3000);
+
     return () => {
       clearInterval(productInterval);
+      clearInterval(reviewInterval);
       clearTimeout(timeout);
     };
-  }, [laptopImages.length]);
+  }, [laptopImages.length, wideReviewData.length]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -269,7 +276,6 @@ export default function Home() {
         <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100/80 w-[315px] sm:w-[365px] h-[440px] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform pointer-events-auto ${
           isAiOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-12'
         }`}>
-          {/* Header Bar Area */}
           <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-md">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -286,7 +292,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Interactive Chat Stream Window */}
           <div className="flex-1 overflow-y-auto p-4 bg-slate-50/60 space-y-4 text-[13px]">
             {chatMessages.map((msg, index) => {
               if (msg.sender === 'system-action') {
@@ -327,7 +332,6 @@ export default function Home() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Chat Form Footer (Font size 16px to prevent zoom) */}
           <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
             <input
               type="text"
@@ -345,7 +349,6 @@ export default function Home() {
         {/* ALIGNED VERTICAL TRIGGER ACTIONS */}
         <div className="flex flex-col gap-3.5 items-end pointer-events-auto">
           
-          {/* AI CHAT BUTTON */}
           <button
             onClick={() => setIsAiOpen(!isAiOpen)}
             className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group border border-white/10 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -359,7 +362,6 @@ export default function Home() {
             <span className="absolute right-16 bg-white text-gray-900 font-bold text-xs tracking-wider uppercase px-3 py-2 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Consult Specialist 🤵🏻‍♂️</span>
           </button>
 
-          {/* BASE WHATSAPP BUTTON */}
           <a
             href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
             target="_blank" rel="noopener noreferrer"
@@ -435,25 +437,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ADVANCED MASSIVE REVIEWS SHOWCASE GRID LAYOUT */}
+      {/* ADVANCED MASSIVE REVIEWS SHOWCASE (HORIZONTAL SLIDER) */}
       <section id="reviews" className="py-20 md:py-28 bg-white border-y border-gray-100 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 to-transparent pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
           <ScrollReveal delay={150}>
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <span className="bg-blue-100 text-[#2848CC] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 inline-block">Global Trust Matrix</span>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-950 tracking-tight">Endorsed By Corporate & Retail Partners</h2>
               <p className="text-gray-500 text-sm md:text-base mt-3 max-w-xl mx-auto font-medium">See why over 50,000+ custom technical integrations rely on Dadar distribution services.</p>
             </div>
           </ScrollReveal>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {wideReviewData.map((review, index) => (
-              <ScrollReveal key={index} delay={index * 100} initialY={14}>
-                <ReviewCard name={review.name} role={review.role} review={review.review} />
-              </ScrollReveal>
-            ))}
-          </div>
+          <ScrollReveal delay={300} initialY={16}>
+            <div className="relative w-full overflow-hidden px-1 py-4">
+              <div 
+                className="flex transition-transform duration-700 ease-in-out will-change-transform"
+                style={{ transform: `translateX(-${activeReviewIndex * 100}%)` }}
+              >
+                {wideReviewData.map((review, idx) => (
+                  <div key={idx} className="w-full min-w-full flex-shrink-0 px-2 sm:px-4">
+                    <ReviewCard name={review.name} role={review.role} review={review.review} />
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex justify-center gap-2.5 mt-8">
+                {wideReviewData.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveReviewIndex(idx)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${idx === activeReviewIndex ? 'w-7 bg-[#2848CC]' : 'w-2.5 bg-gray-200'}`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+
         </div>
       </section>
 
