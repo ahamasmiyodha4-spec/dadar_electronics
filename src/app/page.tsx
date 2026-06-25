@@ -2,11 +2,6 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo.jpg';
-// Product Images
-import laptop1 from '../../public/laptop1.png';
-import laptop2 from '../../public/laptop2.jpg';
-import laptop3 from '../../public/laptop3.png';
-import mobile1 from '../../public/mobile1.png';
 import { useState, useEffect, useRef } from 'react';
 import data from '../data/inventory.json';
 
@@ -59,7 +54,11 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false); // Allows bi-directional up/down animations
+        }
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );
@@ -81,7 +80,7 @@ function ScrollReveal({ children, delay = 0, initialY = 12 }: { children: React.
 }
 
 // User Review Card Component
-function ReviewCard({ name, role, review, rating }: { name: string; role: string; review: string; rating: number }) {
+function ReviewCard({ name, role, review }: { name: string; role: string; review: string }) {
   return (
     <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-100 relative group flex flex-col justify-between">
       <span className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-[#2848CC] transition-colors">⭐️⭐️⭐️⭐️⭐️</span>
@@ -108,12 +107,15 @@ export default function Home() {
   const [heroTrigger, setHeroTrigger] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
 
-  // Auto-slide laptop photos
-  const laptopImages = [laptop2, laptop3, laptop1];
+  // Clean public root image strings (Fixes the imports error completely)
+  const laptopImages = [
+    '/laptop2.png',
+    '/laptop3.png',
+    '/laptop1.png'
+  ];
 
   useEffect(() => {
     setIsLoaded(true);
-    // Slight delay to make sure the entrance is smooth
     const timeout = setTimeout(() => setHeroTrigger(true), 200);
 
     const interval = setInterval(() => {
@@ -126,13 +128,13 @@ export default function Home() {
   }, [laptopImages.length]);
 
   // Luxury Stats Counters
-  const partnerCount = useCountUp(1500, 2500, heroTrigger);
-  const customerCount = useCountUp(50000, 30000, heroTrigger);
+  const partnerCount = useCountUp(1500, 2000, heroTrigger);
+  const customerCount = useCountUp(50000, 20000, heroTrigger);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth relative">
       
-      {/* 1. ADVANCED SIDE-OPENING MOBILE MENU (Off-Canvas) */}
+      {/* ADVANCED SIDE-OPENING MOBILE MENU (Off-Canvas) */}
       <div className={`fixed inset-0 z-50 bg-black/60 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileMenuOpen(false)}></div>
       <div className={`fixed top-0 right-0 h-full w-[280px] bg-gray-950 text-white shadow-2xl z-50 p-8 flex flex-col justify-between transition-transform duration-500 ease-out transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div>
@@ -145,6 +147,7 @@ export default function Home() {
           <nav className="space-y-6">
             <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">About Us</a>
             <a href="#products" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Our Products</a>
+            <a href="#reviews" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Reviews</a>
             <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Contact</a>
             <div className="pt-8">
               <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center bg-[#E60000] text-white px-5 py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition shadow-md">WhatsApp Us</a>
@@ -157,7 +160,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FLOATING WHATSAPP ICON (with slightly adjusted delay for premium entry) */}
+      {/* FLOATING WHATSAPP ICON */}
       <a
         href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
         target="_blank" rel="noopener noreferrer"
@@ -185,6 +188,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center space-x-10">
             <a href="#about" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors">About Us</a>
             <a href="#products" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors">Our Products</a>
+            <a href="#reviews" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors">Reviews</a>
             <a href="#contact" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors">Contact</a>
             <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="ml-2 bg-[#E60000] text-white px-6 py-3 rounded-full font-bold text-base lg:text-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5 transition-all">WhatsApp Us</a>
           </nav>
@@ -201,7 +205,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
           <h1 className={`text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-4 md:mb-6 leading-tight transition-all duration-1000 ease-out transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>Premium Electronics <br className="md:hidden" /> in Dubai</h1>
           
-          {/* 2. PREMIUM STAGGERED COUNT-UP STATS BAR */}
+          {/* STATS COUNT BAR */}
           <div className={`grid grid-cols-2 gap-x-12 sm:gap-x-20 py-8 mb-10 transition-all duration-1000 ease-out delay-200 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="text-center">
               <span className="text-5xl md:text-6xl lg:text-7xl font-black tabular-nums tracking-tight text-white">{partnerCount.toLocaleString()}<span className="text-4xl lg:text-5xl font-black text-white/80">+</span></span>
@@ -220,7 +224,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. PREMIUM GLASSMORPHISM REVIEWS SECTION */}
+      {/* REVIEWS SECTION */}
       <section id="reviews" className="py-20 md:py-28 bg-white border-y border-gray-100 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-50/50 -skew-y-3 transform-gpu"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -233,16 +237,16 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
             <ScrollReveal delay={400} initialY={16}>
-              <ReviewCard name="Omar K." role="Business Operations Leader, Dubai" review="Dadar Electronics delivers unparalleled quality and professional service. Their wholesale support is incredible!" rating={5} />
+              <ReviewCard name="Omar K." role="Business Operations Leader, Dubai" review="Dadar Electronics delivers unparalleled quality and professional service. Their wholesale support is incredible!" />
             </ScrollReveal>
             <ScrollReveal delay={600} initialY={16}>
-              <ReviewCard name="Elena P." role="Wholesale Partner, London" review="They are truly a global family of business owners. Their tech is genuine, and the competitive wholesale pricing made scaling simple!" rating={5} />
+              <ReviewCard name="Elena P." role="Wholesale Partner, London" review="They are truly a global family of business owners. Their tech is genuine, and the competitive wholesale pricing made scaling simple!" />
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* ABOUT US WITH SCROLL ENTRIES */}
+      {/* ABOUT US */}
       <section id="about" className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
         <ScrollReveal>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -252,7 +256,7 @@ export default function Home() {
         </ScrollReveal>
       </section>
 
-      {/* PRODUCTS SECTION WITH STAGGERED SCROLL REVEALS */}
+      {/* PRODUCTS SECTION */}
       <section id="products" className="py-16 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -289,7 +293,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CONTACT & FOOTER WITH SCROLL ENTRANCE */}
+      {/* CONTACT & FOOTER */}
       <footer id="contact" className="bg-gray-900 text-white py-16">
         <ScrollReveal>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
