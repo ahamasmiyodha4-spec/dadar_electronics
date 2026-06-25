@@ -2,6 +2,12 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo.jpg';
+// Importing your new showcase images
+import laptop1 from '../../public/laptop1.png';
+import laptop2 from '../../public/laptop2.jpg';
+import laptop3 from '../../public/laptop3.png';
+import mobile1 from '../../public/mobile1.png';
+
 import { useState, useEffect } from 'react';
 import data from '../data/inventory.json';
 
@@ -17,7 +23,7 @@ interface StoreInfo {
   phone: string;
   email: string;
   whatsapp: string;
-  website: string; // Synced with inventory.json
+  website: string;
 }
 
 interface InventoryData {
@@ -30,10 +36,18 @@ const typedData = data as InventoryData;
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
 
+  const laptopImages = [laptop2, laptop3, laptop1];
+
+  // Auto-slide laptop photos every 4 seconds for a premium dynamic look
   useEffect(() => {
     setIsLoaded(true);
-  }, []);
+    const interval = setInterval(() => {
+      setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [laptopImages.length]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
@@ -152,26 +166,63 @@ export default function Home() {
       {/* PRODUCTS SECTION */}
       <section id="products" className="py-16 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-3xl font-bold text-gray-900 border-b-4 border-[#2848CC] inline-block pb-2">
               Our Core Categories
             </h2>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
             {typedData.categories.map((category) => (
               <div 
                 key={category.id} 
-                className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow-2xl transition-all duration-300"
+                className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
               >
-                <div className="text-5xl mb-5 md:mb-6">{category.icon}</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{category.name}</h3>
-                <p className="text-gray-500 mb-6 md:mb-8 leading-relaxed">{category.description}</p>
-                <a href="#contact" className="text-[#2848CC] font-bold inline-flex items-center group-hover:text-[#E60000] transition-colors">
-                  Inquire about stock →
+                <div>
+                  {/* Premium Media Layout containing your uploaded files */}
+                  <div className="relative w-full h-52 sm:h-64 mb-6 overflow-hidden rounded-xl bg-gray-100 border border-gray-50 shadow-inner">
+                    {category.id === 'laptops' ? (
+                      // Laptop automatic loop using laptop2.jpg, laptop3.png, and laptop1.png
+                      laptopImages.map((img, idx) => (
+                        <Image
+                          key={idx}
+                          src={img}
+                          alt="Premium Laptops Showcase"
+                          fill
+                          className={`object-cover transition-opacity duration-1000 ease-in-out ${idx === activeLaptopIndex ? 'opacity-100' : 'opacity-0'}`}
+                          sizes="(max-w-7xl) 50vw, 100vw"
+                        />
+                      ))
+                    ) : (
+                      // Mobile single premium collage template using mobile1.png
+                      <Image
+                        src={mobile1}
+                        alt="Smartphones & Mobiles Showcase"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                        sizes="(max-w-7xl) 50vw, 100vw"
+                      />
+                    )}
+                    
+                    {/* Floating Brand Badge */}
+                    <span className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-[11px] font-bold tracking-widest px-2.5 py-1 rounded-md uppercase">
+                      {category.icon} {category.id}
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{category.name}</h3>
+                  <p className="text-gray-500 mb-6 md:mb-8 leading-relaxed">{category.description}</p>
+                </div>
+
+                <a href="#contact" className="text-[#2848CC] font-bold inline-flex items-center group-hover:text-[#E60000] transition-colors mt-auto">
+                  Inquire about stock 
+                  <span className="ml-1.5 transform group-hover:translate-x-1.5 transition-transform">→</span>
                 </a>
               </div>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -184,7 +235,6 @@ export default function Home() {
             <p className="mb-2 text-gray-300"><strong>Address:</strong> {typedData.storeInfo.address}</p>
             <p className="mb-2 text-gray-300"><strong>Phone:</strong> {typedData.storeInfo.phone}</p>
             <p className="mb-2 text-gray-300"><strong>Email:</strong> {typedData.storeInfo.email}</p>
-            {/* LINK DISPLAY ADDED HERE */}
             <p className="mb-8 text-gray-300"><strong>Website:</strong> <a href={typedData.storeInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline transition-all">{typedData.storeInfo.website.replace('https://www.', '')}</a></p>
             
             <a 
