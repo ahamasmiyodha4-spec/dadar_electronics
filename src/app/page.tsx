@@ -32,11 +32,11 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
 
-  // Using absolute string paths relative to the public directory
+  // Added base path prepends directly to the image URLs so GitHub Pages can locate them
   const laptopImages = [
-    '/laptop2.jpg',
-    '/laptop3.png',
-    '/laptop1.png'
+    '/dadar_electronics/laptop2.jpg',
+    '/dadar_electronics/laptop3.png',
+    '/dadar_electronics/laptop1.png'
   ];
 
   // Auto-slide laptop photos every 4 seconds
@@ -194,7 +194,7 @@ export default function Home() {
                       ))
                     ) : (
                       <Image
-                        src="/mobile1.png"
+                        src="/dadar_electronics/mobile1.png" // Updated with repository path prefix
                         alt="Smartphones & Mobiles Showcase"
                         fill
                         unoptimized
@@ -212,7 +212,13 @@ export default function Home() {
                   <p className="text-gray-500 mb-6 md:mb-8 leading-relaxed">{category.description}</p>
                 </div>
 
-                <a href="#contact" className="text-[#2848CC] font-bold inline-flex items-center group-hover:text-[#E60000] transition-colors mt-auto">
+                {/* Pointing directly to WhatsApp with specific inquiry messages */}
+                <a 
+                  href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent(`Hello Dadar Electronics, I am interested in inquiring about availability and pricing for your ${category.name}.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#2848CC] font-bold inline-flex items-center group-hover:text-[#E60000] transition-colors mt-auto"
+                >
                   Inquire about stock 
                   <span className="ml-1.5 transform group-hover:translate-x-1.5 transition-transform">→</span>
                 </a>
