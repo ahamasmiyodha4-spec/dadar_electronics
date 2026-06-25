@@ -108,10 +108,15 @@ export default function Home() {
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
-  // AI Agent Interactive States
+  // Advanced AI Assistant Conversational State Funnel
   const [isAiOpen, setIsAiOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Array<{ sender: 'bot' | 'user'; text: string }>>([
-    { sender: 'bot', text: "Hello! I am your Dadar Electronics AI Assistant. 🤖 Are you looking for a Premium Laptop or a Smartphone today?" }
+  const [step, setStep] = useState<'welcome' | 'name_given' | 'product_selected' | 'details_gathered' | 'complete'>('welcome');
+  const [customerName, setCustomerName] = useState('');
+  const [deviceInterest, setDeviceInterest] = useState('');
+  const [customSpecs, setCustomSpecs] = useState('');
+  
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: 'bot' | 'user' | 'system-action'; text: string; whatsappUrl?: string }>>([
+    { sender: 'bot', text: "Welcome to Dadar Electronics Dubai! 🇦🇪 I'm Tariq, your personal device assistant. May I get your name to start customizing your recommendation?" }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
@@ -148,14 +153,13 @@ export default function Home() {
     };
   }, [laptopImages.length, reviewData.length]);
 
-  // Scroll to bottom of chat whenever messages update
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [chatMessages, isAiTyping]);
 
-  // Handle Static Client-Side AI Response Logic
+  // Lead Gathering Conversational Logic Funnel
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
@@ -166,23 +170,54 @@ export default function Home() {
     setInputValue("");
     setIsAiTyping(true);
 
-    // AI thinking timeout simulation (1 second)
     setTimeout(() => {
-      const textLower = userText.toLowerCase();
-      let botResponse = "I understand! Could you specify if you prefer top-tier brands like Apple, Lenovo, or Dell? You can also message our wholesale team directly on WhatsApp for the latest stock sheets!";
+      let botResponse = "";
 
-      if (textLower.includes('laptop') || textLower.includes('computer') || textLower.includes('macbook') || textLower.includes('work')) {
-        botResponse = "Excellent choice. We carry high-performance premium laptops suited for business, gaming, and design (featuring Apple, Dell, HP, and Lenovo). What is your primary use case, or would you like to check wholesale pricing via WhatsApp?";
-      } else if (textLower.includes('mobile') || textLower.includes('phone') || textLower.includes('iphone') || textLower.includes('samsung')) {
-        botResponse = "Smartphones are one of our core specialties! We stock genuine, top-tier global models. Are you looking for bulk wholesale batches or a single retail premium flagship? Let me know, or tap the WhatsApp bubble to secure live rates!";
-      } else if (textLower.includes('price') || textLower.includes('cost') || textLower.includes('budget') || textLower.includes('how much')) {
-        botResponse = "Because we deal in both direct retail and volume wholesale distributions out of Dubai, our prices fluctuate dynamically with daily market updates to stay competitive. Tap 'WhatsApp Us' right now to get an instant customized quote!";
-      } else if (textLower.includes('hello') || textLower.includes('hi') || textLower.includes('hey')) {
-        botResponse = "Hello there! Welcome to Dadar Electronics. Are you exploring laptop availability or premium mobile stock lists today?";
+      if (step === 'welcome') {
+        setCustomerName(userText);
+        botResponse = `Excellent to meet you, ${userText}! Are you looking to buy high-performance Laptops or premium Smartphones today?`;
+        setStep('name_given');
+        setChatMessages([...newMessages, { sender: 'bot', text: botResponse }]);
+        setIsAiTyping(false);
+      } 
+      
+      else if (step === 'name_given') {
+        setDeviceInterest(userText);
+        botResponse = `Got it—${userText}! To help me find the best model, could you tell me your preferred brand (like Apple, Lenovo, Samsung) or your target budget?`;
+        setStep('product_selected');
+        setChatMessages([...newMessages, { sender: 'bot', text: botResponse }]);
+        setIsAiTyping(false);
+      } 
+      
+      else if (step === 'product_selected') {
+        setCustomSpecs(userText);
+        setStep('details_gathered');
+        
+        // AI reviews configuration and generates custom summary link package
+        const whatsappText = `Hello Dadar Electronics, I would like to submit a product stock inquiry:\n\n• Name: ${customerName}\n• Looking for: ${deviceInterest}\n• Details/Budget: ${userText}\n\nPlease check live availability for me!`;
+        const generatedUrl = `https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent(whatsappText)}`;
+
+        // Sends confirmation text along with an interactive action block inside the stream
+        setChatMessages([
+          ...newMessages, 
+          { 
+            sender: 'bot', 
+            text: `Perfect! I've packaged all your requirements together into an official product inquiry sheet for our warehouse managers, ${customerName}.` 
+          },
+          {
+            sender: 'system-action',
+            text: '👉 Click to Submit Inquiry to WhatsApp',
+            whatsappUrl: generatedUrl
+          }
+        ]);
+        setIsAiTyping(false);
+      } 
+      
+      else {
+        botResponse = `Your product inquiry has been compiled successfully. Simply click the red action box above to open WhatsApp and sync directly with our sales desk!`;
+        setChatMessages([...newMessages, { sender: 'bot', text: botResponse }]);
+        setIsAiTyping(false);
       }
-
-      setChatMessages([...newMessages, { sender: 'bot', text: botResponse }]);
-      setIsAiTyping(false);
     }, 1000);
   };
 
@@ -192,7 +227,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth relative">
       
-      {/* BRIGHT PREMIUM SIDE-OPENING MOBILE MENU (Off-Canvas Glassmorphism) */}
+      {/* BRIGHT PREMIUM SIDE-OPENING MOBILE MENU */}
       <div 
         className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
         onClick={() => setIsMobileMenuOpen(false)}
@@ -225,48 +260,68 @@ export default function Home() {
             </div>
           </nav>
         </div>
-        
         <div className="border-t border-gray-100 pt-6 text-xs text-gray-400 font-medium">
           <p>© {new Date().getFullYear()} Dadar Electronics</p>
           <p className="mt-0.5 text-gray-500">Dubai, UAE</p>
         </div>
       </div>
 
-      {/* FLOATING ACTIONS CONTAINER (BOTTOM RIGHT) */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+      {/* FIXED CORNER FLOATING INTERFACE GRID SYSTEM (PREVENTS INPUT ZOOM) */}
+      <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3.5 pointer-events-none">
         
-        {/* INTERACTIVE EXPANDABLE AI CHAT PANEL */}
-        <div className={`bg-white rounded-2xl shadow-2xl border border-gray-100 w-[300px] sm:w-[350px] h-[400px] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform ${
-          isAiOpen ? 'scale-100 opacity-100 pointer-events-auto translate-y-0' : 'scale-50 opacity-0 pointer-events-none translate-y-10'
+        {/* EXPANDABLE AI CONCIERGE CHAT MODULE */}
+        <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100/80 w-[315px] sm:w-[365px] h-[440px] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform pointer-events-auto ${
+          isAiOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-12'
         }`}>
-          {/* Header */}
-          <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-2.5">
-              <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+          {/* Header Bar Area */}
+          <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm tracking-wider border border-white/20">🤵🏻‍♂️</div>
+                <div className="w-2.5 h-2.5 bg-green-400 rounded-full absolute bottom-0 right-0 border-2 border-[#2848CC]"></div>
+              </div>
               <div>
-                <h4 className="font-bold text-sm tracking-wide">Dadar AI Agent</h4>
-                <p className="text-[10px] text-blue-100 font-medium">Virtual Assistant</p>
+                <h4 className="font-extrabold text-sm tracking-wide">Tariq | Dadar Concierge</h4>
+                <p className="text-[10px] text-blue-100 font-medium uppercase tracking-widest">Live Support Agent</p>
               </div>
             </div>
-            <button onClick={() => setIsAiOpen(false)} className="hover:bg-white/10 p-1 rounded transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <button onClick={() => setIsAiOpen(false)} className="hover:bg-white/10 p-1.5 rounded-lg transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
-          {/* Messages Grid Window */}
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50 space-y-3.5 text-xs">
-            {chatMessages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 shadow-sm leading-relaxed ${
-                  msg.sender === 'user' ? 'bg-[#2848CC] text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
-                }`}>
-                  {msg.text}
+          {/* Interactive Chat Stream Window */}
+          <div className="flex-1 overflow-y-auto p-4 bg-slate-50/60 space-y-4 text-[13px]">
+            {chatMessages.map((msg, index) => {
+              if (msg.sender === 'system-action') {
+                return (
+                  <div key={index} className="flex justify-center py-1">
+                    <a 
+                      href={msg.whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#E60000] text-white font-bold text-center px-5 py-3 rounded-xl shadow-lg hover:bg-red-700 hover:scale-102 active:scale-98 transition-all duration-300 w-full animate-bounce"
+                    >
+                      {msg.text}
+                    </a>
+                  </div>
+                );
+              }
+              return (
+                <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm leading-relaxed font-medium ${
+                    msg.sender === 'user' 
+                      ? 'bg-gradient-to-r from-[#2848CC] to-blue-600 text-white rounded-br-none' 
+                      : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                  }`}>
+                    {msg.text}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {isAiTyping && (
               <div className="flex justify-start">
-                <div className="bg-white border border-gray-100 text-gray-400 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-1">
+                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
                   <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
                   <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
@@ -276,47 +331,49 @@ export default function Home() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Bottom Input Box Form */}
+          {/* Chat Form Footer - Locked at 16px font scale to block forced screen mobile zooms */}
           <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about laptops, mobiles, or pricing..."
-              className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-blue-500 text-gray-900"
+              placeholder="Reply to Tariq..."
+              className="flex-1 bg-gray-50 border border-gray-200/60 rounded-xl px-4 py-2.5 text-[16px] focus:outline-none focus:border-[#2848CC] text-gray-900 transition-colors"
             />
-            <button type="submit" className="bg-[#2848CC] hover:bg-blue-700 text-white p-2 rounded-xl transition-colors shadow-md">
-              <svg className="w-4 h-4 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+            <button type="submit" className="bg-[#2848CC] hover:bg-blue-700 text-white p-2.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center">
+              <svg className="w-4 h-4 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
             </button>
           </form>
         </div>
 
-        {/* FLOATING ACTION TRIGGER CONTROLS BUTTONS */}
-        <div className="flex flex-col gap-3 items-end">
-          {/* AI Trigger Bubble (Floats comfortably right above WhatsApp) */}
+        {/* ALIGNED VERTICAL TRIGGER ACTIONS (ANCHORED RIGHT CORNER) */}
+        <div className="flex flex-col gap-3.5 items-end pointer-events-auto">
+          
+          {/* AI CHAT BUTTON WITH PULSING VISUAL DECORATIONS */}
           <button
             onClick={() => setIsAiOpen(!isAiOpen)}
-            className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group border border-white/10 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             style={{ transitionDelay: '1400ms' }}
-            aria-label="Toggle AI Agent"
+            aria-label="Toggle AI Concierge"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            <span className="absolute inset-0 rounded-full bg-[#2848CC] opacity-20 animate-ping"></span>
+            <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
-            <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Ask AI Agent 💡</span>
+            <span className="absolute right-16 bg-white text-gray-900 font-bold text-xs tracking-wider uppercase px-3 py-2 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Consult Specialist 🤵🏻‍♂️</span>
           </button>
 
-          {/* Standard WhatsApp Trigger Bubble */}
+          {/* BASE WHATSAPP BUTTON */}
           <a
             href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
             target="_blank" rel="noopener noreferrer"
-            className={`bg-[#25D366] text-white p-4 rounded-full shadow-2xl flex items-center justify-center group hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`bg-[#25D366] text-white p-4 rounded-full shadow-2xl flex items-center justify-center group hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             style={{ transitionDelay: '1600ms' }}
             aria-label="Chat on WhatsApp"
           >
-            <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping group-hover:animate-none"></span>
-            <svg className="w-7 h-7 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.516 2.266 2.27 3.507 5.283 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.66.986 3.295 1.503 4.988 1.504 5.485 0 9.95-4.463 9.954-9.948.002-2.658-1.033-5.156-2.915-7.04C16.835 1.805 14.342.766 11.683.766c-5.492 0-9.959 4.464-9.963 9.949-.001 1.83.499 3.614 1.448 5.2l-.995 3.636 3.731-.978zm11.393-5.284c-.314-.157-1.855-.915-2.137-1.018-.282-.102-.487-.153-.692.157-.204.307-.793 1.017-.971 1.222-.178.205-.357.23-.671.074-1.742-.87-2.915-1.554-4.086-3.564-.309-.53.309-.492.885-1.64.095-.192.047-.361-.024-.518-.071-.157-.692-1.666-.949-2.284-.25-.601-.504-.519-.692-.529-.178-.009-.383-.01-.59-.01c-.204 0-.537.077-.818.384-.282.308-1.077 1.051-1.077 2.564 0 1.513 1.101 2.972 1.254 3.177.154.205 2.167 3.31 5.248 4.64.733.317 1.307.507 1.754.65.736.233 1.407.2 1.937.12.59-.088 1.854-.758 2.115-1.455.26-.695.26-1.293.183-1.417-.077-.123-.282-.196-.595-.354z"/></svg>
-            <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Chat with Us</span>
+            <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-30 animate-ping group-hover:animate-none"></span>
+            <svg className="w-6 h-6 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.516 2.266 2.27 3.507 5.283 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.66.986 3.295 1.503 4.988 1.504 5.485 0 9.95-4.463 9.954-9.948.002-2.658-1.033-5.156-2.915-7.04C16.835 1.805 14.342.766 11.683.766c-5.492 0-9.959 4.464-9.963 9.949-.001 1.83.499 3.614 1.448 5.2l-.995 3.636 3.731-.978zm11.393-5.284c-.314-.157-1.855-.915-2.137-1.018-.282-.102-.487-.153-.692.157-.204.307-.793 1.017-.971 1.222-.178.205-.357.23-.671.074-1.742-.87-2.915-1.554-4.086-3.564-.309-.53.309-.492.885-1.64.095-.192.047-.361-.024-.518-.071-.157-.692-1.666-.949-2.284-.25-.601-.504-.519-.692-.529-.178-.009-.383-.01-.59-.01c-.204 0-.537.077-.818.384-.282.308-1.077 1.051-1.077 2.564 0 1.513 1.101 2.972 1.254 3.177.154.205 2.167 3.31 5.248 4.64.733.317 1.307.507 1.754.65.736.233 1.407.2 1.937.12.59-.088 1.854-.758 2.115-1.455.26-.695.26-1.293.183-1.417-.077-.123-.282-.196-.595-.354z"/></svg>
+            <span className="absolute right-16 bg-white text-gray-900 font-bold text-xs tracking-wider uppercase px-3 py-2 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Secure Bulk Rates 💬</span>
           </a>
         </div>
       </div>
@@ -327,7 +384,7 @@ export default function Home() {
           
           <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <Image src={logo} alt="Dadar Electronics Logo" width={200} height={100} className="h-12 sm:h-14 md:h-20 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" priority/>
-            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-x-4'}`}>
               <span className="text-sm sm:text-lg md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2848CC] to-[#1a2d80] tracking-tight leading-none mb-0.5 md:mb-1">Dadar Electronics</span>
               <span className="text-[9px] sm:text-[11px] md:text-xs font-bold text-[#E60000] tracking-widest uppercase leading-none">Trading LLC</span>
             </div>
