@@ -193,11 +193,9 @@ export default function Home() {
         setCustomSpecs(userText);
         setStep('details_gathered');
         
-        // AI reviews configuration and generates custom summary link package
         const whatsappText = `Hello Dadar Electronics, I would like to submit a product stock inquiry:\n\n• Name: ${customerName}\n• Looking for: ${deviceInterest}\n• Details/Budget: ${userText}\n\nPlease check live availability for me!`;
         const generatedUrl = `https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent(whatsappText)}`;
 
-        // Sends confirmation text along with an interactive action block inside the stream
         setChatMessages([
           ...newMessages, 
           { 
@@ -261,12 +259,12 @@ export default function Home() {
           </nav>
         </div>
         <div className="border-t border-gray-100 pt-6 text-xs text-gray-400 font-medium">
-          <p>© {new Date().getFullYear()} Dadar Electronics</p>
+          <p>© 2023 Dadar Electronics</p>
           <p className="mt-0.5 text-gray-500">Dubai, UAE</p>
         </div>
       </div>
 
-      {/* FIXED CORNER FLOATING INTERFACE GRID SYSTEM (PREVENTS INPUT ZOOM) */}
+      {/* FIXED CORNER FLOATING INTERFACE GRID SYSTEM */}
       <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3.5 pointer-events-none">
         
         {/* EXPANDABLE AI CONCIERGE CHAT MODULE */}
@@ -331,7 +329,7 @@ export default function Home() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Chat Form Footer - Locked at 16px font scale to block forced screen mobile zooms */}
+          {/* Chat Form Footer */}
           <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
             <input
               type="text"
@@ -346,10 +344,10 @@ export default function Home() {
           </form>
         </div>
 
-        {/* ALIGNED VERTICAL TRIGGER ACTIONS (ANCHORED RIGHT CORNER) */}
+        {/* ALIGNED VERTICAL TRIGGER ACTIONS */}
         <div className="flex flex-col gap-3.5 items-end pointer-events-auto">
           
-          {/* AI CHAT BUTTON WITH PULSING VISUAL DECORATIONS */}
+          {/* AI CHAT BUTTON */}
           <button
             onClick={() => setIsAiOpen(!isAiOpen)}
             className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group border border-white/10 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -547,7 +545,9 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">© {new Date().getFullYear()} Dadar Electronics Trading LLC. All rights reserved.</div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+            © 2023 Dadar Electronics Trading LLC. All rights reserved.
+          </div>
         </ScrollReveal>
       </footer>
 
