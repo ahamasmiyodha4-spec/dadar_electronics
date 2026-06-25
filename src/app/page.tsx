@@ -35,11 +35,9 @@ function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; dela
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Triggers every time it rolls onto the screen layout window
         if (entry.isIntersecting) {
           setIsVisible(true);
         } else {
-          // Removes state when scrolling past to allow down-to-up re-animation
           setIsVisible(false);
         }
       },
@@ -86,9 +84,34 @@ export default function Home() {
   }, [laptopImages.length]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth relative">
       
-      {/* PREMIUM HEADER */}
+      {/* FLOATING WHATSAPP ICON */}
+      <a
+        href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl flex items-center justify-center group hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}
+        style={{ transitionDelay: '1200ms' }} // Fades in smoothly after header and hero run their entrance animations
+        aria-label="Chat on WhatsApp"
+      >
+        {/* Pulsing Outer Glow Effect */}
+        <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping group-hover:animate-none"></span>
+        
+        {/* SVG WhatsApp Graphic Asset */}
+        <svg className="w-7 h-7 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.516 2.266 2.27 3.507 5.283 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.66.986 3.295 1.503 4.988 1.504 5.485 0 9.95-4.463 9.954-9.948.002-2.658-1.033-5.156-2.915-7.04C16.835 1.805 14.342.766 11.683.766c-5.492 0-9.959 4.464-9.963 9.949-.001 1.83.499 3.614 1.448 5.2l-.995 3.636 3.731-.978zm11.393-5.284c-.314-.157-1.855-.915-2.137-1.018-.282-.102-.487-.153-.692.157-.204.307-.793 1.017-.971 1.222-.178.205-.357.23-.671.074-1.742-.87-2.915-1.554-4.086-3.564-.309-.53.309-.492.885-1.64.095-.192.047-.361-.024-.518-.071-.157-.692-1.666-.949-2.284-.25-.601-.504-.519-.692-.529-.178-.009-.383-.01-.59-.01c-.204 0-.537.077-.818.384-.282.308-1.077 1.051-1.077 2.564 0 1.513 1.101 2.972 1.254 3.177.154.205 2.167 3.31 5.248 4.64.733.317 1.307.507 1.754.65.736.233 1.407.2 1.937.12.59-.088 1.854-.758 2.115-1.455.26-.695.26-1.293.183-1.417-.077-.123-.282-.196-.595-.354z"/>
+        </svg>
+
+        {/* Floating Tooltip Pill */}
+        <span className="absolute right-16 bg-white text-gray-900 font-bold text-sm px-3 py-1.5 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">
+          Chat with Us
+        </span>
+      </a>
+
+      {/* HEADER */}
       <header className={`bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
           
@@ -189,7 +212,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT US WITH SCROLL ENTRIES */}
+      {/* ABOUT US */}
       <section id="about" className="py-16 md:py-20 bg-white">
         <ScrollReveal>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -203,7 +226,7 @@ export default function Home() {
         </ScrollReveal>
       </section>
 
-      {/* PRODUCTS SECTION WITH STAGGERED SCROLL REVEALS */}
+      {/* PRODUCTS SECTION */}
       <section id="products" className="py-16 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -270,7 +293,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CONTACT & FOOTER WITH SCROLL ENTRANCE */}
+      {/* CONTACT & FOOTER */}
       <footer id="contact" className="bg-gray-900 text-white py-16">
         <ScrollReveal>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
@@ -284,7 +307,7 @@ export default function Home() {
               
               <a 
                 href={`https://wa.me/${typedData.storeInfo.whatsapp}`}
-                className="inline-block bg-[#2848CC] text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300 w-full md:w-auto text-center"
+                className="inline-block bg-[#2848CC] text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition w-full md:w-auto text-center"
               >
                 Chat on WhatsApp
               </a>
