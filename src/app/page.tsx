@@ -17,7 +17,7 @@ interface StoreInfo {
   phone: string;
   email: string;
   whatsapp: string;
-  website: string;
+  website: string; // Synced with inventory.json
 }
 
 interface InventoryData {
@@ -31,7 +31,6 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Trigger load animation once component mounts
   useEffect(() => {
     setIsLoaded(true);
   }, []);
@@ -45,7 +44,6 @@ export default function Home() {
           
           {/* LOGO & BRAND NAME AREA */}
           <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-            {/* Logo Image */}
             <Image 
               src={logo} 
               alt="Dadar Electronics Logo" 
@@ -55,7 +53,6 @@ export default function Home() {
               priority
             />
             
-            {/* Animated Brand Text */}
             <div className={`flex flex-col justify-center transition-all duration-1000 ease-out transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
               <span className="text-sm sm:text-lg md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2848CC] to-[#1a2d80] tracking-tight leading-none mb-0.5 md:mb-1">
                 Dadar Electronics
@@ -178,14 +175,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* CONTACT & FOOTER */}
       <footer id="contact" className="bg-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+          
           <div>
             <h3 className="text-2xl font-bold mb-6 text-[#E60000]">Visit Us</h3>
             <p className="mb-2 text-gray-300"><strong>Address:</strong> {typedData.storeInfo.address}</p>
             <p className="mb-2 text-gray-300"><strong>Phone:</strong> {typedData.storeInfo.phone}</p>
-            <p className="mb-8 text-gray-300"><strong>Email:</strong> {typedData.storeInfo.email}</p>
+            <p className="mb-2 text-gray-300"><strong>Email:</strong> {typedData.storeInfo.email}</p>
+            {/* LINK DISPLAY ADDED HERE */}
+            <p className="mb-8 text-gray-300"><strong>Website:</strong> <a href={typedData.storeInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline transition-all">{typedData.storeInfo.website.replace('https://www.', '')}</a></p>
+            
             <a 
               href={`https://wa.me/${typedData.storeInfo.whatsapp}`}
               className="inline-block bg-[#2848CC] text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition w-full md:w-auto text-center"
@@ -193,6 +194,7 @@ export default function Home() {
               Chat on WhatsApp
             </a>
           </div>
+
           <div>
             <h3 className="text-2xl font-bold mb-6 text-[#E60000]">Store Hours</h3>
             <ul className="space-y-3 text-gray-300">
@@ -200,8 +202,13 @@ export default function Home() {
               <li>Friday: 03:00 PM - 10:00 PM</li>
             </ul>
           </div>
+
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+          © {new Date().getFullYear()} Dadar Electronics Trading LLC. All rights reserved.
         </div>
       </footer>
+
     </div>
   );
 }
