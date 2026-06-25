@@ -113,7 +113,6 @@ export default function Home() {
   const [step, setStep] = useState<'welcome' | 'name_given' | 'product_selected' | 'details_gathered' | 'complete'>('welcome');
   const [customerName, setCustomerName] = useState('');
   const [deviceInterest, setDeviceInterest] = useState('');
-  const [customSpecs, setCustomSpecs] = useState('');
   
   const [chatMessages, setChatMessages] = useState<Array<{ sender: 'bot' | 'user' | 'system-action'; text: string; whatsappUrl?: string }>>([
     { sender: 'bot', text: "Welcome to Dadar Electronics Dubai! 🇦🇪 I'm Tariq, your personal device assistant. May I get your name to start customizing your recommendation?" }
@@ -146,7 +145,6 @@ export default function Home() {
       setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
     }, 4000);
 
-    // Restore the 3-second automatic sliding functionality
     const reviewInterval = setInterval(() => {
       setActiveReviewIndex((prev) => (prev + 1) % wideReviewData.length);
     }, 3000);
@@ -195,7 +193,6 @@ export default function Home() {
       } 
       
       else if (step === 'product_selected') {
-        setCustomSpecs(userText);
         setStep('details_gathered');
         
         const whatsappText = `Hello Dadar Electronics, I would like to submit a product stock inquiry:\n\n• Name: ${customerName}\n• Looking for: ${deviceInterest}\n• Details/Budget: ${userText}\n\nPlease check live availability for me!`;
@@ -272,11 +269,14 @@ export default function Home() {
       {/* FIXED CORNER FLOATING INTERFACE GRID SYSTEM */}
       <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3.5 pointer-events-none">
         
-        {/* EXPANDABLE AI CONCIERGE CHAT MODULE */}
-        <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100/80 w-[315px] sm:w-[365px] h-[440px] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform pointer-events-auto ${
+        {/* EXPANDABLE AI CONCIERGE CHAT MODULE 
+            FIX: Added width calc and dvh constraints so it squishes perfectly on mobile keyboard triggers 
+        */}
+        <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100/80 w-[calc(100vw-32px)] sm:w-[365px] h-[440px] max-h-[calc(100dvh-160px)] flex flex-col overflow-hidden transition-all duration-500 ease-out origin-bottom-right transform pointer-events-auto ${
           isAiOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-12'
         }`}>
-          <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-md">
+          {/* Header Bar Area */}
+          <div className="bg-gradient-to-r from-[#2848CC] to-blue-700 text-white p-4 flex justify-between items-center shadow-md flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm tracking-wider border border-white/20">🤵🏻‍♂️</div>
@@ -292,6 +292,7 @@ export default function Home() {
             </button>
           </div>
 
+          {/* Interactive Chat Stream Window */}
           <div className="flex-1 overflow-y-auto p-4 bg-slate-50/60 space-y-4 text-[13px]">
             {chatMessages.map((msg, index) => {
               if (msg.sender === 'system-action') {
@@ -332,7 +333,8 @@ export default function Home() {
             <div ref={chatEndRef} />
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2">
+          {/* Chat Form Footer (Locked at 16px to prevent forced iOS zoom) */}
+          <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-100 flex gap-2 flex-shrink-0">
             <input
               type="text"
               value={inputValue}
@@ -349,6 +351,7 @@ export default function Home() {
         {/* ALIGNED VERTICAL TRIGGER ACTIONS */}
         <div className="flex flex-col gap-3.5 items-end pointer-events-auto">
           
+          {/* AI CHAT BUTTON */}
           <button
             onClick={() => setIsAiOpen(!isAiOpen)}
             className={`bg-[#2848CC] text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group border border-white/10 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -362,6 +365,7 @@ export default function Home() {
             <span className="absolute right-16 bg-white text-gray-900 font-bold text-xs tracking-wider uppercase px-3 py-2 rounded-lg shadow-xl border border-gray-100 opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">Consult Specialist 🤵🏻‍♂️</span>
           </button>
 
+          {/* BASE WHATSAPP BUTTON */}
           <a
             href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent("Hello Dadar Electronics, I am browsing your website and have an inquiry.")}`}
             target="_blank" rel="noopener noreferrer"
