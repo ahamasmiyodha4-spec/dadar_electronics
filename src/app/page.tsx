@@ -32,14 +32,13 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeLaptopIndex, setActiveLaptopIndex] = useState(0);
 
-  // Added base path prepends directly to the image URLs so GitHub Pages can locate them
+  // Clean root string paths for custom domain mapping
   const laptopImages = [
-    '/dadar_electronics/laptop2.jpg',
-    '/dadar_electronics/laptop3.png',
-    '/dadar_electronics/laptop1.png'
+    '/laptop2.png',
+    '/laptop3.png',
+    '/laptop1.png'
   ];
 
-  // Auto-slide laptop photos every 4 seconds
   useEffect(() => {
     setIsLoaded(true);
     const interval = setInterval(() => {
@@ -55,7 +54,6 @@ export default function Home() {
       <header className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
           
-          {/* LOGO & BRAND NAME AREA */}
           <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <Image 
               src={logo} 
@@ -76,7 +74,6 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-10">
             <a href="#about" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors duration-300">About Us</a>
             <a href="#products" className="text-gray-600 hover:text-[#2848CC] font-bold text-base lg:text-lg tracking-wide transition-colors duration-300">Our Products</a>
@@ -92,7 +89,6 @@ export default function Home() {
             </a>
           </nav>
 
-          {/* Mobile Hamburger Button */}
           <button 
             className="md:hidden p-2 text-gray-700 hover:text-[#2848CC] focus:outline-none"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -108,7 +104,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-xl">
             <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
@@ -194,7 +189,7 @@ export default function Home() {
                       ))
                     ) : (
                       <Image
-                        src="/dadar_electronics/mobile1.png" // Updated with repository path prefix
+                        src="/mobile1.png"
                         alt="Smartphones & Mobiles Showcase"
                         fill
                         unoptimized
@@ -212,7 +207,6 @@ export default function Home() {
                   <p className="text-gray-500 mb-6 md:mb-8 leading-relaxed">{category.description}</p>
                 </div>
 
-                {/* Pointing directly to WhatsApp with specific inquiry messages */}
                 <a 
                   href={`https://wa.me/${typedData.storeInfo.whatsapp}?text=${encodeURIComponent(`Hello Dadar Electronics, I am interested in inquiring about availability and pricing for your ${category.name}.`)}`}
                   target="_blank"
