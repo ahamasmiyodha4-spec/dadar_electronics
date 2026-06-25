@@ -17,6 +17,7 @@ interface StoreInfo {
   phone: string;
   email: string;
   whatsapp: string;
+  website: string;
 }
 
 interface InventoryData {
