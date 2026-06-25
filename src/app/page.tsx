@@ -124,12 +124,10 @@ export default function Home() {
     setIsLoaded(true);
     const timeout = setTimeout(() => setHeroTrigger(true), 200);
 
-    // Product images interval (4 seconds)
     const productInterval = setInterval(() => {
       setActiveLaptopIndex((prev) => (prev + 1) % laptopImages.length);
     }, 4000);
 
-    // Premium Reviews loop interval (3 seconds moving right to left)
     const reviewInterval = setInterval(() => {
       setActiveReviewIndex((prev) => (prev + 1) % reviewData.length);
     }, 3000);
@@ -147,29 +145,43 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden scroll-smooth relative">
       
-      {/* ADVANCED SIDE-OPENING MOBILE MENU (Off-Canvas) */}
-      <div className={`fixed inset-0 z-50 bg-black/60 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileMenuOpen(false)}></div>
-      <div className={`fixed top-0 right-0 h-full w-[280px] bg-gray-950 text-white shadow-2xl z-50 p-8 flex flex-col justify-between transition-transform duration-500 ease-out transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* 1. BRIGHT PREMIUM SIDE-OPENING MOBILE MENU (Off-Canvas Glassmorphism) */}
+      <div 
+        className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
+        onClick={() => setIsMobileMenuOpen(false)}
+      ></div>
+      
+      <div className={`fixed top-0 right-0 h-full w-[280px] bg-white/95 backdrop-blur-md shadow-2xl border-l border-gray-100 z-50 p-8 flex flex-col justify-between transition-transform duration-500 ease-out transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div>
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-xl font-bold tracking-tight">Navigation</h2>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-white p-1">
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#2848CC]">Navigation</h2>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-gray-900 p-1 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
-          <nav className="space-y-6">
-            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">About Us</a>
-            <a href="#products" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Our Products</a>
-            <a href="#reviews" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Reviews</a>
-            <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-xl font-bold hover:text-[#2848CC]">Contact</a>
-            <div className="pt-8">
-              <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center bg-[#E60000] text-white px-5 py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition shadow-md">WhatsApp Us</a>
+          
+          <nav className="space-y-5">
+            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold text-gray-900 hover:text-[#2848CC] transition-colors py-1">About Us</a>
+            <a href="#products" onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold text-gray-900 hover:text-[#2848CC] transition-colors py-1">Our Products</a>
+            <a href="#reviews" onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold text-gray-900 hover:text-[#2848CC] transition-colors py-1">Reviews</a>
+            <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold text-gray-900 hover:text-[#2848CC] transition-colors py-1">Contact</a>
+            
+            <div className="pt-6">
+              <a 
+                href={`https://wa.me/${typedData.storeInfo.whatsapp}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="block w-full text-center bg-[#E60000] text-white px-5 py-3.5 rounded-xl font-bold text-base hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-red-500/20 active:scale-98"
+              >
+                WhatsApp Us
+              </a>
             </div>
           </nav>
         </div>
-        <div className="border-t border-gray-800 pt-6 text-sm text-gray-500">
+        
+        <div className="border-t border-gray-100 pt-6 text-xs text-gray-400 font-medium">
           <p>© {new Date().getFullYear()} Dadar Electronics</p>
-          <p>Dubai, UAE</p>
+          <p className="mt-0.5 text-gray-500">Dubai, UAE</p>
         </div>
       </div>
 
@@ -192,7 +204,7 @@ export default function Home() {
           
           <div className="flex items-center gap-3 sm:gap-4 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <Image src={logo} alt="Dadar Electronics Logo" width={200} height={100} className="h-12 sm:h-14 md:h-20 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" priority/>
-            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+            <div className={`flex flex-col justify-center transition-all duration-1000 ease-out delay-300 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
               <span className="text-sm sm:text-lg md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#2848CC] to-[#1a2d80] tracking-tight leading-none mb-0.5 md:mb-1">Dadar Electronics</span>
               <span className="text-[9px] sm:text-[11px] md:text-xs font-bold text-[#E60000] tracking-widest uppercase leading-none">Trading LLC</span>
             </div>
@@ -206,7 +218,7 @@ export default function Home() {
             <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="ml-2 bg-[#E60000] text-white px-6 py-3 rounded-full font-bold text-base lg:text-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5 transition-all">WhatsApp Us</a>
           </nav>
 
-          <button className="md:hidden p-2 text-gray-700 hover:text-[#2848CC]" onClick={() => setIsMobileMenuOpen(true)}>
+          <button className="md:hidden p-2 text-gray-700 hover:text-[#2848CC] focus:outline-none" onClick={() => setIsMobileMenuOpen(true)}>
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
         </div>
@@ -247,7 +259,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ADVANCED RIGHT-TO-LEFT HORIZONTAL REVIEWS SLIDER */}
+      {/* REVIEWS SLIDER */}
       <section id="reviews" className="py-20 md:py-28 bg-white border-y border-gray-100 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-50/50 -skew-y-3 transform-gpu"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -259,7 +271,6 @@ export default function Home() {
             </div>
           </ScrollReveal>
           
-          {/* CAROUSEL VIEWPANEL */}
           <ScrollReveal delay={400} initialY={16}>
             <div className="relative w-full overflow-hidden px-1 py-4">
               <div 
@@ -273,7 +284,6 @@ export default function Home() {
                 ))}
               </div>
               
-              {/* SLIDER NAVIGATION DOTSINDICATORS */}
               <div className="flex justify-center gap-2.5 mt-8">
                 {reviewData.map((_, idx) => (
                   <button
@@ -347,7 +357,7 @@ export default function Home() {
               <p className="mb-2 text-gray-300"><strong>Phone:</strong> {typedData.storeInfo.phone}</p>
               <p className="mb-2 text-gray-300"><strong>Email:</strong> {typedData.storeInfo.email}</p>
               <p className="mb-8 text-gray-300"><strong>Website:</strong> <a href={typedData.storeInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline transition-all">{typedData.storeInfo.website.replace('https://www.', '')}</a></p>
-              <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} className="inline-block bg-[#2848CC] text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300 w-full md:w-auto text-center">Chat on WhatsApp</a>
+              <a href={`https://wa.me/${typedData.storeInfo.whatsapp}`} className="inline-block bg-[#2848CC] text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition w-full md:w-auto text-center">Chat on WhatsApp</a>
             </div>
             <div>
               <h3 className="text-2xl font-bold mb-6 text-[#E60000]">Store Hours</h3>
